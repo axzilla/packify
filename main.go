@@ -29,6 +29,10 @@ func main() {
 			fmt.Println(err)
 		}
 
+		if strings.Contains(path, ".git") || strings.Contains(path, ".DS_Store") {
+			return nil
+		}
+
 		layers := strings.Count(path, "/")
 		for range layers {
 			_, err := writer.WriteString(" ")
@@ -37,7 +41,7 @@ func main() {
 			}
 		}
 
-		_, err = writer.WriteString(path + "\n")
+		_, err = writer.WriteString(d.Name() + "\n")
 		if err != nil {
 			return err
 		}
