@@ -2,9 +2,11 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io/fs"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -21,8 +23,9 @@ func main() {
 	}
 	defer file.Close()
 
-	writer := bufio.NewWriter(file)
-	defer writer.Flush()
+	packify := bufio.NewWriter(file)
+
+	var filesBuffer bytes.Buffer
 
 	err = fs.WalkDir(os.DirFS("."), ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -33,17 +36,29 @@ func main() {
 			return nil
 		}
 
-		layers := strings.Count(path, "/")
-		for range layers {
-			_, err := writer.WriteString(" ")
+		depth := strings.Count(path, "/")
+		for range depth {
+			_, err := packify.WriteString(" ")
 			if err != nil {
 				return err
 			}
 		}
 
-		_, err = writer.WriteString(d.Name() + "\n")
+		_, err = packify.WriteString(d.Name() + "\n")
 		if err != nil {
 			return err
+		}
+
+		ext := filepath.Ext(d.Name())
+		if !d.IsDir() && isExtensionAllowed(ext) {
+			openedFile, err := os.ReadFile(path)
+			if err != nil {
+				return err
+			}
+			_, err = filesBuffer.Write(openedFile)
+			if err != nil {
+				return nil
+			}
 		}
 
 		return nil
@@ -51,4 +66,20 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	err = packify.Flush()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	byte, err := filesBuffer.WriteTo(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(byte, "Bytes written!")
+}
+
+func isExtensionAllowed(ext string) bool {
+	disallowedExts := ".png.jpg.jpeg.webp.pdf.zip"
+	return !strings.Contains(disallowedExts, strings.ToLower(ext))
 }
