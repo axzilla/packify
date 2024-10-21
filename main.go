@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"flag"
 	"fmt"
 	"io/fs"
 	"os"
@@ -16,8 +17,13 @@ type TreePoint struct {
 	children    []string
 }
 
+var path string
+
 func main() {
-	file, err := os.Create("packify.txt")
+	output := flag.String("output", "packify.txt", "Set a output e.g. myfile.txt, default is packify.txt")
+	flag.Parse()
+
+	file, err := os.Create(*output)
 	if err != nil {
 		fmt.Println(err)
 	}
