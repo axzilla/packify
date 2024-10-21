@@ -11,12 +11,6 @@ import (
 	"strings"
 )
 
-type TreePoint struct {
-	name        string
-	isDirectory bool
-	children    []string
-}
-
 var path string
 
 func main() {
