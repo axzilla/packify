@@ -16,11 +16,11 @@ var path string
 func main() {
 	output := flag.String("output", "packify.txt", "Set a output e.g. myfile.txt, default is packify.txt")
 	includePattern := flag.String("include", "*", "Glob patterns to include (comma-separated)")
-	// excludePattern := flag.String("exclude", "", "Glob patterns to ignore (comma-separated)")
+	excludePattern := flag.String("exclude", "", "Glob patterns to ignore (comma-separated)")
 	flag.Parse()
 
 	includePatterns := strings.Split(*includePattern, ",")
-	// excludePatterns := strings.Split(*excludePattern, ",")
+	excludePatterns := strings.Split(*excludePattern, ",")
 
 	file, err := os.Create(*output)
 	if err != nil {
@@ -49,18 +49,34 @@ func main() {
 		}
 
 		// Include files
-		matched := false
+		included := false
 		for _, pattern := range includePatterns {
 			m, err := filepath.Match(pattern, d.Name())
 			if err != nil {
 				return err
 			}
 			if m {
-				matched = true
+				included = true
 				break
 			}
 		}
-		if !matched {
+		if !included {
+			return nil
+		}
+
+		// Exclude files
+		excluded := false
+		for _, pattern := range excludePatterns {
+			m, err := filepath.Match(pattern, d.Name())
+			if err != nil {
+				return err
+			}
+			if m {
+				excluded = true
+				break
+			}
+		}
+		if excluded {
 			return nil
 		}
 
