@@ -48,36 +48,38 @@ func main() {
 			return nil
 		}
 
-		// Include files
-		included := false
-		for _, pattern := range includePatterns {
-			m, err := filepath.Match(pattern, d.Name())
-			if err != nil {
-				return err
+		if !d.IsDir() {
+			// Include files
+			included := false
+			for _, pattern := range includePatterns {
+				m, err := filepath.Match(pattern, d.Name())
+				if err != nil {
+					return err
+				}
+				if m {
+					included = true
+					break
+				}
 			}
-			if m {
-				included = true
-				break
+			if !included {
+				return nil
 			}
-		}
-		if !included {
-			return nil
-		}
 
-		// Exclude files
-		excluded := false
-		for _, pattern := range excludePatterns {
-			m, err := filepath.Match(pattern, d.Name())
-			if err != nil {
-				return err
+			// Exclude files
+			excluded := false
+			for _, pattern := range excludePatterns {
+				m, err := filepath.Match(pattern, d.Name())
+				if err != nil {
+					return err
+				}
+				if m {
+					excluded = true
+					break
+				}
 			}
-			if m {
-				excluded = true
-				break
+			if excluded {
+				return nil
 			}
-		}
-		if excluded {
-			return nil
 		}
 
 		// Write depth indent for filetree into buffer
