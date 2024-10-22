@@ -1,11 +1,14 @@
 package main
 
 import (
+	"archive/zip"
 	"bufio"
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"io/fs"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,6 +20,7 @@ func main() {
 	output := flag.String("output", "packify.txt", "Set a output e.g. myfile.txt, default is packify.txt")
 	includePattern := flag.String("include", "*", "Glob patterns to include (comma-separated)")
 	excludePattern := flag.String("exclude", "", "Glob patterns to ignore (comma-separated)")
+	remote := flag.String("remote", "", "Get a remote repository, e.g. github.com/axzilla/packify")
 	flag.Parse()
 
 	includePatterns := strings.Split(*includePattern, ",")
@@ -29,7 +33,6 @@ func main() {
 	defer file.Close()
 
 	filetreeBuffer := bufio.NewWriter(file)
-
 	var filecontentsBuffer bytes.Buffer
 
 	// Filetree header
@@ -37,8 +40,22 @@ func main() {
 	_, err = filetreeBuffer.WriteString("Filetree\n")
 	_, err = filetreeBuffer.WriteString("=========================\n")
 
+	// Choose filesystem
+	var fileSystem fs.FS = os.DirFS(".")
+	if *remote != "" {
+		resp, err := http.Get("https://" + *remote + "/archive/refs/heads/main.zip")
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer resp.Body.Close()
+
+		data, _ := io.ReadAll(resp.Body)
+		zipReader, _ := zip.NewReader(bytes.NewReader(data), int64(len(data)))
+		fileSystem = zipReader
+	}
+
 	// Iterate recursive
-	err = fs.WalkDir(os.DirFS("."), ".", func(path string, d fs.DirEntry, err error) error {
+	err = fs.WalkDir(fileSystem, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -110,7 +127,8 @@ func main() {
 		// Write filecontents into buffer
 		ext := filepath.Ext(d.Name())
 		if !d.IsDir() && isExtensionAllowed(ext) {
-			openedFile, err := os.ReadFile(path)
+			// use fs. instead os. because fs works with every filesystem not only with local one on HDD
+			openedFile, err := fs.ReadFile(fileSystem, path)
 			if err != nil {
 				return err
 			}
