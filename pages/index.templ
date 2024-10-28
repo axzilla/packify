@@ -7,10 +7,31 @@ import "github.com/axzilla/goilerplate/pkg/components"
 templ Index() {
 	@layouts.Base() {
 		<div class="flex items-center justify-center h-full">
-			@components.Button(components.ButtonProps{Text: "Hello"})
-			<div class="fixed bottom-4 right-4 z-50">
-				@modules.ThemeSwitcher()
-			</div>
+			<form method="POST" action="/" class="flex flex-col gap-2 w-full max-w-xl">
+				<label for="repo" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+					Github Repo URL
+				</label>
+				@components.Input(components.InputProps{ID: "repo", Name: "url", Placeholder: "github.com/axzilla/packify"})
+				<div class="flex gap-2">
+					<div class="w-full">
+						<label for="include" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+							Include (comma separated)
+						</label>
+						@components.Input(components.InputProps{ID: "include", Name: "include", Placeholder: "*.go,*.md"})
+					</div>
+					<div class="w-full">
+						<label for="exclude" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+							Exclude (comma separated)
+						</label>
+						@components.Input(components.InputProps{ID: "exclude", Name: "exclude", Placeholder: "*.svg"})
+					</div>
+				</div>
+				@components.Button(components.ButtonProps{Text: "Packify Repo"})
+				<div class="fixed bottom-4 right-4 z-50">
+					@modules.ThemeSwitcher()
+				</div>
+			</form>
+			<div id="result"></div>
 		</div>
 	}
 }

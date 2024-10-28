@@ -1,13 +1,18 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"strings"
+
+	// "io"
 	"net/http"
 	"os"
 
 	"github.com/a-h/templ"
 	"github.com/axzilla/goilerplate/assets"
 	"github.com/axzilla/packify/pages"
+	"github.com/axzilla/packify/utils"
 )
 
 func main() {
@@ -15,6 +20,30 @@ func main() {
 	SetupAssetsRoutes(mux)
 
 	mux.Handle("GET /", templ.Handler(pages.Index()))
+	mux.HandleFunc("POST /", func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		repo := strings.ReplaceAll(r.FormValue("url"), " ", "")
+
+		include := "*"
+
+		if r.FormValue("include") != "" {
+			include = strings.ReplaceAll(r.FormValue("include"), " ", "")
+		}
+		exclude := strings.ReplaceAll(r.FormValue("exclude"), " ", "")
+
+		includePatterns := strings.Split(include, ",")
+		excludePatterns := strings.Split(exclude, ",")
+
+		var filetreeBuffer bytes.Buffer
+		var contentsBuffer bytes.Buffer
+
+		utils.WriteToBuffer(&repo, includePatterns, excludePatterns, &filetreeBuffer, &contentsBuffer)
+
+		w.Header().Set("Content-Type", "text/plain")
+		w.Header().Set("Content-Disposition", "attachment; filename=packify.txt")
+		filetreeBuffer.WriteTo(w)
+		contentsBuffer.WriteTo(w)
+	})
 
 	port := "8090"
 	fmt.Println("Server is running on port:", port)
