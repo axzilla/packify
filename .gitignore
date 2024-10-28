@@ -1,3 +1,8 @@
 demo
 *.txt
+*_templ.go
+*_templ.txt
 .DS_Store
+bin
+tmp
+

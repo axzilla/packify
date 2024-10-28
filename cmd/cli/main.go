@@ -1,17 +1,16 @@
 package main
 
 import (
-	"archive/zip"
 	"bufio"
 	"bytes"
 	"flag"
 	"fmt"
-	"io"
 	"io/fs"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/axzilla/packify"
 )
 
 var path string
@@ -40,7 +39,7 @@ func main() {
 	_, err = filetreeBuffer.WriteString("Filetree\n")
 	_, err = filetreeBuffer.WriteString("=========================\n")
 
-	fileSystem, err := FileSystem(*remote)
+	fileSystem, err := packify.FileSystem(*remote)
 	if err != nil {
 		fmt.Printf("Failed to get filesystem: %v\n", err)
 		return
@@ -118,7 +117,7 @@ func main() {
 
 		// Write filecontents into buffer
 		ext := filepath.Ext(d.Name())
-		if !d.IsDir() && isExtensionAllowed(ext) {
+		if !d.IsDir() && packify.IsExtensionAllowed(ext) {
 			// use fs. instead os. because fs works with every filesystem not only with local one on HDD
 			openedFile, err := fs.ReadFile(fileSystem, path)
 			if err != nil {
@@ -153,28 +152,4 @@ func main() {
 		fmt.Println(err)
 	}
 	fmt.Println(byte, "Bytes written!")
-}
-
-func isExtensionAllowed(ext string) bool {
-	disallowedExts := ".png.jpg.jpeg.webp.pdf.zip"
-	return !strings.Contains(disallowedExts, strings.ToLower(ext))
-}
-
-func FileSystem(remote string) (fs.FS, error) {
-	if remote == "" {
-		return os.DirFS("."), nil
-	}
-
-	resp, err := http.Get("https://" + remote + "/archive/refs/heads/main.zip")
-	if err != nil {
-		return nil, fmt.Errorf("download failed: %w", err)
-	}
-	defer resp.Body.Close()
-
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("read failed: %w", err)
-	}
-
-	return zip.NewReader(bytes.NewReader(data), int64(len(data)))
 }
