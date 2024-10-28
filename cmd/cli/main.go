@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/axzilla/packify"
+	"github.com/axzilla/packify/utils"
 )
 
 var path string
@@ -39,7 +39,7 @@ func main() {
 	_, err = filetreeBuffer.WriteString("Filetree\n")
 	_, err = filetreeBuffer.WriteString("=========================\n")
 
-	fileSystem, err := packify.FileSystem(*remote)
+	fileSystem, err := utils.FileSystem(*remote)
 	if err != nil {
 		fmt.Printf("Failed to get filesystem: %v\n", err)
 		return
@@ -117,7 +117,7 @@ func main() {
 
 		// Write filecontents into buffer
 		ext := filepath.Ext(d.Name())
-		if !d.IsDir() && packify.IsExtensionAllowed(ext) {
+		if !d.IsDir() && utils.IsExtensionAllowed(ext) {
 			// use fs. instead os. because fs works with every filesystem not only with local one on HDD
 			openedFile, err := fs.ReadFile(fileSystem, path)
 			if err != nil {

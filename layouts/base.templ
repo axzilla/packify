@@ -1,0 +1,54 @@
+package layouts
+
+import "github.com/axzilla/goilerplate/pkg/utils"
+
+templ Base() {
+	<!DOCTYPE html>
+	<html lang="en" class="h-full dark">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<!-- Tailwind CSS (output) -->
+			<link href="/assets/css/output.css" rel="stylesheet"/>
+			<style>
+                /* Hide the page initially */
+                .page-loader { display: none; }
+                html.pre-load .page-loader { display: block; }
+                html.pre-load body { display: none; }
+            </style>
+			<script>
+                // Immediately set theme and remove pre-load class
+                (function() {
+                    document.documentElement.classList.add('pre-load');
+                    var appTheme = localStorage.getItem('appTheme') || 'light';
+                    document.documentElement.classList.toggle('dark', appTheme === 'dark');
+                    document.addEventListener('DOMContentLoaded', function() {
+                        document.documentElement.classList.remove('pre-load');
+                    });
+                })();
+            </script>
+			<!-- Alpine.js -->
+			@utils.AlpineJS()
+			<!-- Goilerplate CSS -->
+			@utils.CSS("")
+		</head>
+		<body
+			x-data="{
+                appTheme: localStorage.getItem('appTheme') || 'light',
+                sidebarOpen: false,
+                toggleTheme() {
+                    this.appTheme = this.appTheme === 'dark' ? 'light' : 'dark';
+                    localStorage.setItem('appTheme', this.appTheme);
+                    document.documentElement.classList.toggle('dark', this.appTheme === 'dark');
+                }
+            }"
+			class="h-full flex flex-col transition-colors duration-200"
+			:class="{'bg-white text-black': appTheme === 'light', 'text-white': appTheme === 'dark'}"
+		>
+			<div class="page-loader">Loading...</div>
+			<div class="flex flex-col min-h-screen">
+				{ children... }
+			</div>
+		</body>
+	</html>
+}

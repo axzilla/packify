@@ -1,0 +1,16 @@
+package pages
+
+import "github.com/axzilla/packify/layouts"
+import "github.com/axzilla/packify/modules"
+import "github.com/axzilla/goilerplate/pkg/components"
+
+templ Index() {
+	@layouts.Base() {
+		<div class="flex items-center justify-center h-full">
+			@components.Button(components.ButtonProps{Text: "Hello"})
+			<div class="fixed bottom-4 right-4 z-50">
+				@modules.ThemeSwitcher()
+			</div>
+		</div>
+	}
+}

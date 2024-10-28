@@ -1,0 +1,32 @@
+package modules
+
+import "github.com/axzilla/goilerplate/pkg/icons"
+import "github.com/axzilla/goilerplate/pkg/components"
+
+templ ThemeSwitcher() {
+	@components.Button(components.ButtonProps{
+		Size:     components.ButtonIcon,
+		Variant:  components.Ghost,
+		IconLeft: templ.Component(DynamicThemeIcon()),
+		Attributes: templ.Attributes{
+			"@click": "toggleTheme()",
+		},
+	})
+}
+
+templ DynamicThemeIcon() {
+	<span x-show="appTheme === 'dark'" class="block">
+		@LightIcon()
+	</span>
+	<span x-show="appTheme === 'light'" class="block">
+		@DarkIcon()
+	</span>
+}
+
+templ DarkIcon() {
+	@icons.Moon(icons.IconProps{})
+}
+
+templ LightIcon() {
+	@icons.SunMedium(icons.IconProps{})
+}

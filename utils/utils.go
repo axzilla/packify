@@ -1,4 +1,4 @@
-package packify
+package utils
 
 import (
 	"archive/zip"
