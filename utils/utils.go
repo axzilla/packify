@@ -7,8 +7,10 @@ import (
 	"io"
 	"io/fs"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -29,14 +31,29 @@ func IsExtensionAllowed(ext string) bool {
 	return !strings.Contains(disallowedExts, strings.ToLower(ext))
 }
 
+func IsValidGithubURL(rawURL string) bool {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return false
+	}
+
+	if u.Host != "github.com" {
+		return false
+	}
+
+	// Check for user/repo pattern
+	pattern := regexp.MustCompile(`^/[^/]+/[^/]+$`)
+	return pattern.MatchString(u.Path)
+}
+
 func FileSystem(remote string) (fs.FS, error) {
 	if remote == "" {
 		return os.DirFS("."), nil
 	}
 
-	resp, err := http.Get("https://" + remote + "/archive/refs/heads/main.zip")
+	resp, err := http.Get(remote + "/archive/refs/heads/main.zip")
 	if err != nil || resp.StatusCode != 200 {
-		resp, err = http.Get("https://" + remote + "/archive/refs/heads/master.zip")
+		resp, err = http.Get(remote + "/archive/refs/heads/master.zip")
 		if err != nil {
 			return nil, fmt.Errorf("download failed: %w", err)
 		}
@@ -51,19 +68,23 @@ func FileSystem(remote string) (fs.FS, error) {
 	return zip.NewReader(bytes.NewReader(data), int64(len(data)))
 }
 
-func WriteToBuffer(url *string, incPtn, excPtn []string, treeBuf, contentsBuf *bytes.Buffer) error {
+func WriteToBuffer(fileSys fs.FS, url *string, incPtn, excPtn []string, treeBuf, contentsBuf *bytes.Buffer) error {
 	// Filetree header
 	_, err := treeBuf.WriteString("=========================\n")
+	if err != nil {
+		return err
+	}
 	_, err = treeBuf.WriteString("Filetree\n")
+	if err != nil {
+		return err
+	}
 	_, err = treeBuf.WriteString("=========================\n")
-
-	fileSystem, err := FileSystem(*url)
 	if err != nil {
 		return err
 	}
 
 	// Iterate recursive
-	err = fs.WalkDir(fileSystem, ".", func(path string, d fs.DirEntry, err error) error {
+	err = fs.WalkDir(fileSys, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -136,7 +157,7 @@ func WriteToBuffer(url *string, incPtn, excPtn []string, treeBuf, contentsBuf *b
 		ext := filepath.Ext(d.Name())
 		if !d.IsDir() && IsExtensionAllowed(ext) {
 			// use fs. instead os. because fs works with every filesystem not only with local one on HDD
-			openedFile, err := fs.ReadFile(fileSystem, path)
+			openedFile, err := fs.ReadFile(fileSys, path)
 			if err != nil {
 				return err
 			}

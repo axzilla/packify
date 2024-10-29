@@ -16,7 +16,7 @@ func main() {
 	output := flag.String("output", "packify.txt", "Set a output e.g. myfile.txt, default is packify.txt")
 	includePattern := flag.String("include", "*", "Glob patterns to include (comma-separated)")
 	excludePattern := flag.String("exclude", "", "Glob patterns to ignore (comma-separated)")
-	remote := flag.String("remote", "", "Get a remote repository, e.g. github.com/axzilla/packify")
+	repoUrl := flag.String("remote", "", "Get a remote repository, e.g. https://github.com/axzilla/packify")
 	flag.Parse()
 
 	includePatterns := strings.Split(*includePattern, ",")
@@ -31,7 +31,16 @@ func main() {
 	var filetreeBuffer bytes.Buffer
 	var filecontentsBuffer bytes.Buffer
 
-	err = utils.WriteToBuffer(remote, includePatterns, excludePatterns, &filetreeBuffer, &filecontentsBuffer)
+	if *repoUrl != "" && !utils.IsValidGithubURL(*repoUrl) {
+		fmt.Println("Not a valid GitHub repo URL")
+		return
+	}
+	fileSystem, err := utils.FileSystem(*repoUrl)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = utils.WriteToBuffer(fileSystem, repoUrl, includePatterns, excludePatterns, &filetreeBuffer, &filecontentsBuffer)
 	if err != nil {
 		fmt.Println(err)
 	}

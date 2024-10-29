@@ -19,12 +19,17 @@ func main() {
 	mux := http.NewServeMux()
 	SetupAssetsRoutes(mux)
 
-	mux.Handle("GET /", templ.Handler(pages.Index()))
+	mux.Handle("GET /", templ.Handler(pages.Index("")))
 	mux.HandleFunc("POST /", func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
-		repo := strings.ReplaceAll(r.FormValue("url"), " ", "")
-
 		include := "*"
+		repoUrl := strings.ReplaceAll(r.FormValue("url"), " ", "")
+
+		if !utils.IsValidGithubURL(repoUrl) {
+			err := fmt.Errorf("Not a valid GitHub repo URL")
+			pages.Index(err.Error()).Render(r.Context(), w)
+			return
+		}
 
 		if r.FormValue("include") != "" {
 			include = strings.ReplaceAll(r.FormValue("include"), " ", "")
@@ -37,10 +42,20 @@ func main() {
 		var filetreeBuffer bytes.Buffer
 		var contentsBuffer bytes.Buffer
 
-		utils.WriteToBuffer(&repo, includePatterns, excludePatterns, &filetreeBuffer, &contentsBuffer)
+		fileSystem, err := utils.FileSystem(repoUrl)
+		if err != nil {
+			pages.Index(err.Error()).Render(r.Context(), w)
+			return
+		}
 
+		err = utils.WriteToBuffer(fileSystem, &repoUrl, includePatterns, excludePatterns, &filetreeBuffer, &contentsBuffer)
+		if err != nil {
+			pages.Index(err.Error()).Render(r.Context(), w)
+			return
+		}
 		w.Header().Set("Content-Type", "text/plain")
 		w.Header().Set("Content-Disposition", "attachment; filename=packify.txt")
+
 		filetreeBuffer.WriteTo(w)
 		contentsBuffer.WriteTo(w)
 	})

@@ -1,17 +1,30 @@
 package pages
 
-import "github.com/axzilla/packify/layouts"
-import "github.com/axzilla/packify/modules"
-import "github.com/axzilla/goilerplate/pkg/components"
+import (
+	"github.com/axzilla/packify/layouts"
+	"github.com/axzilla/packify/modules"
+	"github.com/axzilla/goilerplate/pkg/components"
+)
 
-templ Index() {
+templ Index(err string) {
 	@layouts.Base() {
-		<div class="flex items-center justify-center h-full">
-			<form method="POST" action="/" class="flex flex-col gap-2 w-full max-w-xl">
+		<div
+			class="flex flex-col items-center justify-center h-full"
+			x-data="{ hasError: false, repo: '' }"
+			data-has-error="true"
+			x-init="hasError = $el.dataset.hasError === 'true'"
+		>
+			<form
+				method="POST"
+				action="/"
+				class="flex flex-col gap-2 w-full max-w-xl"
+				@submit="hasError = false"
+				@input="hasError = false"
+			>
 				<label for="repo" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
 					Github Repo URL
 				</label>
-				@components.Input(components.InputProps{ID: "repo", Name: "url", Placeholder: "github.com/axzilla/packify"})
+				@components.Input(components.InputProps{ID: "repo", Name: "url", Placeholder: "e.g. https://github.com/axzilla/packify", Attributes: templ.Attributes{"x-model": "repo"}})
 				<div class="flex gap-2">
 					<div class="w-full">
 						<label for="include" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
@@ -26,12 +39,20 @@ templ Index() {
 						@components.Input(components.InputProps{ID: "exclude", Name: "exclude", Placeholder: "*.svg"})
 					</div>
 				</div>
-				@components.Button(components.ButtonProps{Text: "Packify Repo"})
-				<div class="fixed bottom-4 right-4 z-50">
-					@modules.ThemeSwitcher()
-				</div>
+				if err != "" {
+					<div
+						class="text-red-500"
+						x-show="hasError"
+					>{ err }</div>
+				}
+				@components.Button(components.ButtonProps{
+					Text: "Packify Repo",
+				})
 			</form>
 			<div id="result"></div>
+		</div>
+		<div class="fixed bottom-4 right-4 z-50">
+			@modules.ThemeSwitcher()
 		</div>
 	}
 }

@@ -1,3 +1,6 @@
+init:
+	mkdir -p tmp/bin
+
 # Run templ generation in watch mode to detect all .templ files and 
 # re-create _templ.txt files on change, then send reload event to browser. 
 # Default url: http://localhost:7331
@@ -13,7 +16,7 @@ server:
 	--build.exclude_dir "node_modules" \
 	--build.include_ext "go" \
 	--build.stop_on_error "false" \
-	--misc.clean_on_exit true
+	--misc.clean_on_exit "true" 
 
 # Run tailwindcss to generate the styles.css bundle in watch mode.
 tailwind:
