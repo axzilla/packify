@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"strings"
 
-	// "io"
 	"net/http"
 	"os"
 
 	"github.com/a-h/templ"
-	"github.com/axzilla/goilerplate/assets"
+	"github.com/axzilla/packify/assets"
 	"github.com/axzilla/packify/pages"
 	"github.com/axzilla/packify/utils"
 )
