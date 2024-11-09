@@ -8,48 +8,88 @@ import (
 
 templ Index(err string) {
 	@layouts.Base() {
-		<div
-			class="flex flex-col items-center justify-center h-full"
-			x-data="{ hasError: false, repo: '' }"
-			data-has-error="true"
-			x-init="hasError = $el.dataset.hasError === 'true'"
-		>
-			<form
-				method="POST"
-				action="/"
-				class="flex flex-col gap-2 w-full max-w-xl"
-				@submit="hasError = false"
-				@input="hasError = false"
-			>
-				<label for="repo" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-					Github Repo URL
-				</label>
-				@components.Input(components.InputProps{ID: "repo", Name: "url", Placeholder: "e.g. https://github.com/axzilla/packify", Attributes: templ.Attributes{"x-model": "repo"}})
-				<div class="flex gap-2">
-					<div class="w-full">
-						<label for="include" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-							Include (comma separated)
-						</label>
-						@components.Input(components.InputProps{ID: "include", Name: "include", Placeholder: "*.go,*.md"})
-					</div>
-					<div class="w-full">
-						<label for="exclude" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-							Exclude (comma separated)
-						</label>
-						@components.Input(components.InputProps{ID: "exclude", Name: "exclude", Placeholder: "*.svg"})
+		<div class="h-full flex flex-col justify-evenly">
+			// Hero Section
+			<div class="relative isolate px-6 pt-14 lg:px-8">
+				<div class="mx-auto max-w-2xl">
+					<div class="text-center">
+						<h1 class="text-4xl font-bold tracking-tight sm:text-6xl mb-4">
+							Packify Your Code
+						</h1>
+						<p class="text-lg leading-8 text-gray-600 dark:text-gray-400 mb-8">
+							Transform your GitHub repositories into AI-friendly formats. Perfect for LLMs like Claude, ChatGPT, and Gemini.
+						</p>
+						<div class="flex gap-4 justify-center mb-16">
+							@components.Button(components.ButtonProps{Text: "Download CLI Tool", Href: "https://github.com/axzilla/packify", Target: "blank"})
+						</div>
 					</div>
 				</div>
-				if err != "" {
-					<div
-						class="text-red-500"
-						x-show="hasError"
-					>{ err }</div>
-				}
-				@components.Button(components.ButtonProps{
-					Text: "Packify Repo",
-				})
-			</form>
-			<div id="result"></div>
+			</div>
+			// Form Section 
+			<div
+				class="max-w-2xl mx-auto px-6 pb-16"
+				x-data="{ hasError: false, repo: '' }"
+				data-has-error="true"
+				x-init="hasError = $el.dataset.hasError === 'true'"
+			>
+				<div class="bg-card border rounded-lg shadow-sm p-6">
+					<div class="mb-6">
+						<h2 class="text-lg font-semibold mb-2">Try Web App</h2>
+						<p class="text-sm text-muted-foreground">
+							Enter a GitHub repository URL and choose which files to include in your pack.
+						</p>
+					</div>
+					<form
+						method="POST"
+						action="/"
+						class="flex flex-col gap-4"
+						@submit="hasError = false"
+						@input="hasError = false"
+					>
+						<div class="space-y-1">
+							<label for="repo" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+								Github Repo URL
+							</label>
+							@components.Input(components.InputProps{
+								ID:          "repo",
+								Name:        "url",
+								Placeholder: "github.com/axzilla/packify",
+								Attributes:  templ.Attributes{"x-model": "repo"},
+							})
+						</div>
+						<div class="grid grid-cols-2 gap-4">
+							<div class="space-y-1">
+								<label for="include" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+									Include (comma separated)
+								</label>
+								@components.Input(components.InputProps{
+									ID:          "include",
+									Name:        "include",
+									Placeholder: "*.go,*.md",
+								})
+							</div>
+							<div class="space-y-1">
+								<label for="exclude" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+									Exclude (comma separated)
+								</label>
+								@components.Input(components.InputProps{
+									ID:          "exclude",
+									Name:        "exclude",
+									Placeholder: "*.svg",
+								})
+							</div>
+						</div>
+						if err != "" {
+							<div class="text-red-500" x-show="hasError">{ err }</div>
+						}
+						@components.Button(components.ButtonProps{
+							Text: "Generate Pack",
+							Type: "submit",
+						})
+					</form>
+				</div>
+				<div id="result"></div>
+			</div>
 		</div>
 		<div class="fixed bottom-4 right-4 z-50">
 			@modules.ThemeSwitcher()
