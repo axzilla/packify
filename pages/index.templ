@@ -1,9 +1,9 @@
 package pages
 
 import (
-	"github.com/axzilla/packify/layouts"
-	"github.com/axzilla/packify/modules"
 	"github.com/axzilla/goilerplate/pkg/components"
+	"github.com/axzilla/stackpack/layouts"
+	"github.com/axzilla/stackpack/modules"
 )
 
 templ Index(err string) {
@@ -14,13 +14,13 @@ templ Index(err string) {
 				<div class="mx-auto max-w-2xl">
 					<div class="text-center">
 						<h1 class="text-4xl font-bold tracking-tight sm:text-6xl mb-4">
-							Packify Your Code
+							Stackpack Your Code
 						</h1>
 						<p class="text-lg leading-8 text-gray-600 dark:text-gray-400 mb-8">
 							Transform your GitHub repositories into AI-friendly formats. Perfect for LLMs like Claude, ChatGPT, and Gemini.
 						</p>
 						<div class="flex gap-4 justify-center mb-16">
-							@components.Button(components.ButtonProps{Text: "Download CLI Tool", Href: "https://github.com/axzilla/packify", Target: "blank"})
+							@components.Button(components.ButtonProps{Text: "Download CLI Tool", Href: "https://github.com/axzilla/stackpack", Target: "blank"})
 						</div>
 					</div>
 				</div>
@@ -53,7 +53,7 @@ templ Index(err string) {
 							@components.Input(components.InputProps{
 								ID:          "repo",
 								Name:        "url",
-								Placeholder: "github.com/axzilla/packify",
+								Placeholder: "github.com/axzilla/stackpack",
 								Attributes:  templ.Attributes{"x-model": "repo"},
 							})
 						</div>

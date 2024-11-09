@@ -1,4 +1,4 @@
-module github.com/axzilla/packify
+module github.com/axzilla/stackpack
 
 go 1.22.4
 

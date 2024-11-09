@@ -7,16 +7,16 @@ import (
 	"os"
 	"strings"
 
-	"github.com/axzilla/packify/utils"
+	"github.com/axzilla/stackpack/utils"
 )
 
 var path string
 
 func main() {
-	output := flag.String("output", "packify.txt", "Set a output e.g. myfile.txt, default is packify.txt")
+	output := flag.String("output", "stackpack.txt", "Set a output e.g. myfile.txt, default is stackpack.txt")
 	includePattern := flag.String("include", "*", "Glob patterns to include (comma-separated)")
 	excludePattern := flag.String("exclude", "", "Glob patterns to ignore (comma-separated)")
-	repoUrl := flag.String("remote", "", "Get a remote repository, e.g. https://github.com/axzilla/packify")
+	repoUrl := flag.String("remote", "", "Get a remote repository, e.g. https://github.com/axzilla/stackpack")
 	flag.Parse()
 
 	includePatterns := strings.Split(*includePattern, ",")

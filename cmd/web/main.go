@@ -9,9 +9,9 @@ import (
 	"os"
 
 	"github.com/a-h/templ"
-	"github.com/axzilla/packify/assets"
-	"github.com/axzilla/packify/pages"
-	"github.com/axzilla/packify/utils"
+	"github.com/axzilla/stackpack/assets"
+	"github.com/axzilla/stackpack/pages"
+	"github.com/axzilla/stackpack/utils"
 )
 
 func main() {
@@ -53,7 +53,7 @@ func main() {
 			return
 		}
 		w.Header().Set("Content-Type", "text/plain")
-		w.Header().Set("Content-Disposition", "attachment; filename=packify.txt")
+		w.Header().Set("Content-Disposition", "attachment; filename=stackpack.txt")
 
 		filetreeBuffer.WriteTo(w)
 		contentsBuffer.WriteTo(w)

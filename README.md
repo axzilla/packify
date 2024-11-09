@@ -1,4 +1,4 @@
-# Packify 🎁
+# Stackpack 🎁
 
 Transform your GitHub repositories into AI-friendly formats, perfect for LLMs like Claude, ChatGPT, and Gemini.
 
@@ -14,7 +14,7 @@ Transform your GitHub repositories into AI-friendly formats, perfect for LLMs li
 
 ### Web App
 
-Visit [packify.dev](https://packify.dev) to use the web interface.
+Visit [stackpack.xyz](https://stackpack.xyz) to use the web interface.
 
 1. Enter a GitHub repository URL
 2. (Optional) Specify include/exclude patterns
@@ -25,25 +25,25 @@ Visit [packify.dev](https://packify.dev) to use the web interface.
 Install:
 
 ```bash
-go install github.com/axzilla/packify/cmd/cli@latest
+go install github.com/axzilla/stackpack/cmd/cli@latest
 ```
 
 Basic usage:
 
 ```bash
 # Pack local directory
-packify --output=output.txt
+stackpack --output=output.txt
 
 # Pack remote repository
-packify --remote=https://github.com/user/repo
+stackpack --remote=https://github.com/user/repo
 
 # With include/exclude patterns
-packify --include="*.go,*.md" --exclude="test/*"
+stackpack --include="*.go,*.md" --exclude="test/*"
 ```
 
 Available flags:
 
-- `--output`: Output file name (default: "packify.txt")
+- `--output`: Output file name (default: "stackpack.txt")
 - `--include`: Glob patterns to include (comma-separated), e.g. "_\*.go,_\*.md"
 - `--exclude`: Glob patterns to ignore (comma-separated), e.g. "_\*.svg,_\*.png"
 - `--remote`: GitHub repository URL to pack
@@ -53,13 +53,13 @@ Available flags:
 Pack only Go and Markdown files:
 
 ```bash
-packify --include="*.go,*.md"
+stackpack --include="*.go,*.md"
 ```
 
 Pack a remote repository excluding images:
 
 ```bash
-packify --remote=https://github.com/user/repo --exclude="*.png,*.jpg"
+stackpack --remote=https://github.com/user/repo --exclude="*.png,*.jpg"
 ```
 
 ## Development
@@ -73,8 +73,8 @@ Setup:
 
 ```bash
 # Clone repository
-git clone https://github.com/axzilla/packify
-cd packify
+git clone https://github.com/axzilla/stackpack
+cd stackpack
 
 # Install dependencies
 go mod download
@@ -84,7 +84,7 @@ npm install
 make dev
 
 # Build CLI
-go build -o packify cmd/cli/main.go
+go build -o stackpack cmd/cli/main.go
 ```
 
 ## Contributing
