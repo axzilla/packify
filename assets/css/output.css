@@ -674,6 +674,10 @@ body {
   left: 0px;
 }
 
+.left-4 {
+  left: 1rem;
+}
+
 .left-full {
   left: 100%;
 }
@@ -785,6 +789,10 @@ body {
 
 .mt-4 {
   margin-top: 1rem;
+}
+
+.mt-auto {
+  margin-top: auto;
 }
 
 .block {
@@ -1954,6 +1962,11 @@ body {
 .hover\:text-green-700:hover {
   --tw-text-opacity: 1;
   color: rgb(21 128 61 / var(--tw-text-opacity));
+}
+
+.hover\:text-primary:hover {
+  --tw-text-opacity: 1;
+  color: hsl(var(--primary) / var(--tw-text-opacity));
 }
 
 .hover\:text-primary\/80:hover {
