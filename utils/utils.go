@@ -12,6 +12,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/axzilla/stackpack/config"
 )
 
 func CreateFile(output *string) (*os.File, error) {
@@ -46,14 +48,25 @@ func IsValidGithubURL(rawURL string) bool {
 	return pattern.MatchString(u.Path)
 }
 
+func makeRequest(remote, branch string) (*http.Response, error) {
+	client := http.Client{}
+	req, err := http.NewRequest("GET", remote+"/archive/refs/heads/"+branch+".zip", nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", config.AppConfig.GitHubToken)
+	resp, err := client.Do(req)
+	return resp, nil
+}
+
 func FileSystem(remote string) (fs.FS, error) {
 	if remote == "" {
 		return os.DirFS("."), nil
 	}
 
-	resp, err := http.Get(remote + "/archive/refs/heads/main.zip")
+	resp, err := makeRequest(remote, "main")
 	if err != nil || resp.StatusCode != 200 {
-		resp, err = http.Get(remote + "/archive/refs/heads/master.zip")
+		resp, err = makeRequest(remote, "master")
 		if err != nil {
 			return nil, fmt.Errorf("download failed: %w", err)
 		}

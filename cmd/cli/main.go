@@ -7,12 +7,14 @@ import (
 	"os"
 	"strings"
 
+	"github.com/axzilla/stackpack/config"
 	"github.com/axzilla/stackpack/utils"
 )
 
 var path string
 
 func main() {
+	config.LoadConfig()
 	output := flag.String("output", "stackpack.txt", "Set a output e.g. myfile.txt, default is stackpack.txt")
 	includePattern := flag.String("include", "*", "Glob patterns to include (comma-separated)")
 	excludePattern := flag.String("exclude", "", "Glob patterns to ignore (comma-separated)")

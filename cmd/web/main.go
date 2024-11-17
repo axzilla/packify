@@ -10,12 +10,14 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/axzilla/stackpack/assets"
+	"github.com/axzilla/stackpack/config"
 	"github.com/axzilla/stackpack/pages"
 	"github.com/axzilla/stackpack/utils"
 )
 
 func main() {
 	mux := http.NewServeMux()
+	config.LoadConfig()
 	SetupAssetsRoutes(mux)
 
 	mux.Handle("GET /", templ.Handler(pages.Index("")))
